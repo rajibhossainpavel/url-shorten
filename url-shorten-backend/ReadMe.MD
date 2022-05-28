@@ -90,8 +90,13 @@ Result:
             "status": 200,
             "success": true,
             "data": {
-                "destination_url": "https://stackoverflow.com/questions/6019853/php-cannot-use-a-scalar-as-an-array-warning",
-                "short_url": "http://localhost:8000/short/dzEMzB"
+                "ip_address": "127.0.0.1",
+                "operating_system": "Windows",
+                "operating_system_version": "10.0",
+                "browser": "Chrome",
+                "browser_version": "100.0.4896.88",
+                "referer_url": null,
+                "device_type": "desktop"
             }
         },
         "exception": null
