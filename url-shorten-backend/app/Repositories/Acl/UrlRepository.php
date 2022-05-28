@@ -114,7 +114,7 @@ class UrlRepository{
 			if(isset($payload['url_key']) && !empty($payload['url_key'])){
 				$urlFound=$this->ShortURL->where('url_key', '=', $payload['url_key'])->first();
 				if(isset($urlFound) && !empty($urlFound)){
-					$result['destination_url']=$urlFound['destination_url'];
+					$result['destination_url']=$urlFound->destination_url;
 					$result['short_url']=$payload['short_url'];
 				}else{
 					$result['destination_url']='';
@@ -135,15 +135,16 @@ class UrlRepository{
 				if($shortURL->trackingEnabled()){
 					$ShortURLFound=$this->ShortURL->where('url_key', '=', $payload['url_key'])->first();
 					if(isset($ShortURLFound) && !empty($ShortURLFound)){
-						$ShortURLVisitFound=$this->ShortURLVisit->where(['short_url_id', '=', $ShortURLFound->id]);
+						$ShortURLVisitFound=$this->ShortURLVisit->where('short_url_id', '=', $ShortURLFound->id)->first();
+						
 						if(isset($ShortURLVisitFound) && !empty($ShortURLVisitFound)){
-							$result['ip_address']=$ShortURLVisitFound['ip_address'];
-							$result['operating_system']=$ShortURLVisitFound['operating_system'];
-							$result['operating_system_version']=$ShortURLVisitFound['operating_system_version'];
-							$result['browser']=$ShortURLVisitFound['browser'];
-							$result['browser_version']=$ShortURLVisitFound['browser_version'];
-							$result['referer_url']=$ShortURLVisitFound['referer_url'];
-							$result['device_type']=$ShortURLVisitFound['device_type'];
+							$result['ip_address']=$ShortURLVisitFound->ip_address;
+							$result['operating_system']=$ShortURLVisitFound->operating_system;
+							$result['operating_system_version']=$ShortURLVisitFound->operating_system_version;
+							$result['browser']=$ShortURLVisitFound->browser;
+							$result['browser_version']=$ShortURLVisitFound->browser_version;
+							$result['referer_url']=$ShortURLVisitFound->referer_url;
+							$result['device_type']=$ShortURLVisitFound->device_type;
 						}
 					}
 				}
