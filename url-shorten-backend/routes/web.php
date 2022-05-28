@@ -22,4 +22,5 @@ Route::get('/', function () {
 		Route::post('store-url', 'UrlController@storeUrl');
 		Route::post('show-url', 'UrlController@showUrl');
 		Route::post('track-url', 'UrlController@trackUrl');
+		Route::get('short/{url_key}', 'UrlController@visitUrl');
 	});

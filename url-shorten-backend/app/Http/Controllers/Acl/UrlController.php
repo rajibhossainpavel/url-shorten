@@ -70,4 +70,20 @@ class UrlController extends Controller
 		}
 		return response()->json($Result, $Result['status']);	
 	}
+	
+	public function visitUrl(Request $request){
+		$Result = ['status' => 200];
+		try {
+			$payload=array();
+			$payload['url_key']=$request->route('url_key');
+			dd($payload);
+			$Result['data'] = $this->UrlService->VisitUrl($payload);
+		} catch (Exception $Exception) {
+			$Result = [
+				'status' => 500,
+				'error' => $Exception->getMessage()
+			];
+		}
+		return response()->json($Result, $Result['status']);	
+	}
 }

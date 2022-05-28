@@ -135,8 +135,7 @@ class UrlRepository{
 				if($shortURL->trackingEnabled()){
 					$ShortURLFound=$this->ShortURL->where('url_key', '=', $payload['url_key'])->first();
 					if(isset($ShortURLFound) && !empty($ShortURLFound)){
-						$ShortURLVisitFound=$this->ShortURLVisit->firstOrCreate(['short_url_id'=>$ShortURLFound->id]);
-						Event::dispatch(new ShortURLVisited($ShortURLFound, $ShortURLVisitFound));
+						$ShortURLVisitFound=$this->ShortURLVisit->where(['short_url_id', '=', $ShortURLFound->id]);
 						if(isset($ShortURLVisitFound) && !empty($ShortURLVisitFound)){
 							$result['ip_address']=$ShortURLVisitFound['ip_address'];
 							$result['operating_system']=$ShortURLVisitFound['operating_system'];
@@ -147,6 +146,24 @@ class UrlRepository{
 							$result['device_type']=$ShortURLVisitFound['device_type'];
 						}
 					}
+				}
+			}
+		}catch(Exception $e){
+			throw new Exception($e->getMessage());
+		}
+		return $result;
+	}
+	
+	public function visitUrl($payload){
+		$result=array();
+		$result['visited']=false;
+		try{
+			if(isset($payload['url_key']) && !empty($payload['url_key'])){
+				$ShortURLFound=$this->ShortURL->where('url_key', '=', $payload['url_key'])->first();
+				if(isset($ShortURLFound) && !empty($ShortURLFound)){
+					$ShortURLVisitFound=$this->ShortURLVisit->firstOrCreate(['short_url_id'=>$ShortURLFound->id]);
+					Event::dispatch(new ShortURLVisited($ShortURLFound, $ShortURLVisitFound));
+					$result['visited']=true;
 				}
 			}
 		}catch(Exception $e){

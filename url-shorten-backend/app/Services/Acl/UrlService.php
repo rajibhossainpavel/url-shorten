@@ -44,4 +44,13 @@ class UrlService{
         }
 		return responder()->success($TrackUrl)->respond();
 	}
+	
+	public function VisitUrl($payload){
+		try {
+            $VisitUrl = $this->UrlRepository->visitUrl($payload);
+		} catch (Exception $Exception) {
+            Log::info($Exception->getMessage());
+        }
+		return responder()->success($VisitUrl)->respond();
+	}
 }
