@@ -110,13 +110,39 @@ class UrlRepository{
 		$result=array();
 		try{
 			if(isset($payload['url_key']) && !empty($payload['url_key'])){
-				$urlFound=Url::where('url_key', '=', $payload['url_key'])->first();
+				$urlFound=$this->Url->where('url_key', '=', $payload['url_key'])->first();
 				if(isset($urlFound) && !empty($urlFound)){
 					$result['destination_url']=$urlFound['destination_url'];
 					$result['short_url']=$payload['short_url'];
 				}else{
 					$result['destination_url']='';
 					$result['short_url']=$payload['short_url'];
+				}
+			}
+		}catch(Exception $e){
+			throw new Exception($e->getMessage());
+		}
+		return $result;
+	}
+	public function trackUrl($payload){
+		$result=array();
+		try{
+			if(isset($payload['url_key']) && !empty($payload['url_key'])){
+				$shortURL = \AshAllenDesign\ShortURL\Models\ShortURL::findByKey($payload['url_key']);
+				if($shortURL->trackingEnabled()){
+					$urlFound=$this->Url->where('url_key', '=', $payload['url_key'])->first();
+					if(isset($urlFound) && !empty($urlFound)){
+						$visitFound=$this->Visit->where('short_url_id', '=', $urlFound->short_url_id)->first();
+						if(isset($visitFound) && !empty($visitFound)){
+							$result['ip_address']=$visitFound['ip_address'];
+							$result['operating_system']=$visitFound['operating_system'];
+							$result['operating_system_version']=$visitFound['operating_system_version'];
+							$result['browser']=$visitFound['browser'];
+							$result['browser_version']=$visitFound['browser_version'];
+							$result['referer_url']=$visitFound['referer_url'];
+							$result['device_type']=$visitFound['device_type'];
+						}
+					}
 				}
 			}
 		}catch(Exception $e){

@@ -35,4 +35,13 @@ class UrlService{
         }
 		return responder()->success($ShowUrl)->respond();
 	}
+	
+	public function TrackUrl($payload){
+		try {
+            $TrackUrl = $this->UrlRepository->trackUrl($payload);
+		} catch (Exception $Exception) {
+            Log::info($Exception->getMessage());
+        }
+		return responder()->success($TrackUrl)->respond();
+	}
 }

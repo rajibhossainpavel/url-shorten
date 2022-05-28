@@ -21,4 +21,5 @@ Route::get('/', function () {
 	Route::group(['namespace' => 'App\Http\Controllers\Acl'], function() {
 		Route::post('store-url', 'UrlController@storeUrl');
 		Route::post('show-url', 'UrlController@showUrl');
+		Route::post('track-url', 'UrlController@trackUrl');
 	});

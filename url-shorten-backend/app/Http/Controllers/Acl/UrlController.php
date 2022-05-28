@@ -52,4 +52,22 @@ class UrlController extends Controller
 		}
 		return response()->json($Result, $Result['status']);	
 	}
+	
+	
+	public function trackUrl(Request $request){
+		$Result = ['status' => 200];
+		try {
+			$payload=array();
+			$payload['short_url']=isset($request->short_url) && !empty($request->short_url)? trim($request->short_url): '';
+			$exploded=explode('/', $payload['short_url']);
+			$payload['url_key']=$exploded[sizeof($exploded)-1];
+			$Result['data'] = $this->UrlService->TrackUrl($payload);
+		} catch (Exception $Exception) {
+			$Result = [
+				'status' => 500,
+				'error' => $Exception->getMessage()
+			];
+		}
+		return response()->json($Result, $Result['status']);	
+	}
 }
