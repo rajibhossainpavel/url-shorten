@@ -83,6 +83,24 @@ class UrlRepository{
 	}
 	
 	public function showUrl($payload){
-	
+		$result=array();
+		try{
+			if(isset($payload['short_url']) && !empty($payload['short_url'])){
+				$urlFound=$this->Url->where('default_short_url', $payload['short_url'])->first();
+				if(isset($urlFound) && !empty($urlFound)){
+					$result['destination_url']=$urlFound['destination_url'];
+					$result['short_url']=$payload['destination_url'];
+				}else{
+					$result['destination_url']='';
+					$result['short_url']=$payload['destination_url'];
+				}
+			}
+		}catch(Exception $e){
+			$transformed=transform($payload['url']);
+			if(!$transformed){
+				throw new Exception($e->getMessage());
+			}
+		}
+		return $result;
 	}
 }
