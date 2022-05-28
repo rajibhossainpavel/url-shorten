@@ -5,24 +5,26 @@ namespace App\Repositories\Acl;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Event;
 use Ariaieboy\LaravelSafeBrowsing\Facades\LaravelSafeBrowsing;
-use App\Models\Acl\Url;
-use App\Models\Acl\Visit;
+use AshAllenDesign\ShortURL\Events\ShortURLVisited;
+use AshAllenDesign\ShortURL\Models\ShortURL;
+use AshAllenDesign\ShortURL\Models\ShortURLVisit;
 
 //EXCEPTION
 use Exception;
 
 class UrlRepository{
-	protected $Url;
-	protected $Visit;
+	protected $ShortURL;
+	protected $ShortURLVisit;
 		
 	public function __construct(
-		Url $Url,
-		Visit $Visit
+		ShortURL $ShortURL,
+		ShortURLVisit $ShortURLVisit
 	)
 	{
-		$this->Url = $Url;	
-		$this->Visit = $Visit;
+		$this->ShortURL = $ShortURL;	
+		$this->ShortURLVisit = $ShortURLVisit;
 	}
 	
 	private function transform(string $url, int $length = 6)
@@ -33,12 +35,12 @@ class UrlRepository{
 			$index = rand(0, strlen($characters) - 1);
             $shortURL .= $characters[$index];
         }
-		if ($this->Url->where('url_key', $shortURL)->count() != 0) {
+		if ($this->ShortURL->where('url_key', $shortURL)->count() != 0) {
 
             $length += 1;
             $this->transform($url, $length);
         }
-		$newUrl=$this->Url->create(['url_key'=>$shortURL]);
+		$newUrl=$this->ShortURL->create(['url_key'=>$shortURL]);
 		$newUrl->destination_url=$url;
 		$newUrl->default_short_url=config('app.name').'/short/'.$shortURL;
 		$newUrlSaved=$newUrl->save();
@@ -110,7 +112,7 @@ class UrlRepository{
 		$result=array();
 		try{
 			if(isset($payload['url_key']) && !empty($payload['url_key'])){
-				$urlFound=$this->Url->where('url_key', '=', $payload['url_key'])->first();
+				$urlFound=$this->ShortURL->where('url_key', '=', $payload['url_key'])->first();
 				if(isset($urlFound) && !empty($urlFound)){
 					$result['destination_url']=$urlFound['destination_url'];
 					$result['short_url']=$payload['short_url'];
@@ -124,23 +126,25 @@ class UrlRepository{
 		}
 		return $result;
 	}
+	
 	public function trackUrl($payload){
 		$result=array();
 		try{
 			if(isset($payload['url_key']) && !empty($payload['url_key'])){
 				$shortURL = \AshAllenDesign\ShortURL\Models\ShortURL::findByKey($payload['url_key']);
 				if($shortURL->trackingEnabled()){
-					$urlFound=$this->Url->where('url_key', '=', $payload['url_key'])->first();
-					if(isset($urlFound) && !empty($urlFound)){
-						$visitFound=$this->Visit->where('short_url_id', '=', $urlFound->short_url_id)->first();
-						if(isset($visitFound) && !empty($visitFound)){
-							$result['ip_address']=$visitFound['ip_address'];
-							$result['operating_system']=$visitFound['operating_system'];
-							$result['operating_system_version']=$visitFound['operating_system_version'];
-							$result['browser']=$visitFound['browser'];
-							$result['browser_version']=$visitFound['browser_version'];
-							$result['referer_url']=$visitFound['referer_url'];
-							$result['device_type']=$visitFound['device_type'];
+					$ShortURLFound=$this->ShortURL->where('url_key', '=', $payload['url_key'])->first();
+					if(isset($ShortURLFound) && !empty($ShortURLFound)){
+						$ShortURLVisitFound=$this->ShortURLVisit->firstOrCreate(['short_url_id'=>$ShortURLFound->id]);
+						Event::dispatch(new ShortURLVisited($ShortURLFound, $ShortURLVisitFound));
+						if(isset($ShortURLVisitFound) && !empty($ShortURLVisitFound)){
+							$result['ip_address']=$ShortURLVisitFound['ip_address'];
+							$result['operating_system']=$ShortURLVisitFound['operating_system'];
+							$result['operating_system_version']=$ShortURLVisitFound['operating_system_version'];
+							$result['browser']=$ShortURLVisitFound['browser'];
+							$result['browser_version']=$ShortURLVisitFound['browser_version'];
+							$result['referer_url']=$ShortURLVisitFound['referer_url'];
+							$result['device_type']=$ShortURLVisitFound['device_type'];
 						}
 					}
 				}
