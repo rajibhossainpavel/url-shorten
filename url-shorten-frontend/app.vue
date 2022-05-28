@@ -6,7 +6,7 @@
 			<button class="btn">Get Short URL</button>
 		</div>
 		<div class="text-center">
-		<p class="py-6">pfzgdjkghjklsdfhgsdfjkhkjsdfjksd;fkh;ksdfjdfj</p>
+		<p class="py-6">The Short URL is: </p>
 	</div>
 	</div>
 	
