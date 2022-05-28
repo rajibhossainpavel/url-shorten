@@ -17,6 +17,29 @@ class UrlController extends Controller
 			$url=$request->url;
 			//CHECK WHERE URL IS SAFE OR NOT
 			$result = LaravelSafeBrowsing::isSafeUrl($url,true);
+			$is_prcessable=0;
+			switch($result){
+				case 1: 
+					$is_prcessable=1;
+					break;
+				case 'THREAT_TYPE_UNSPECIFIED':
+				case 'MALWARE':
+				case 'SOCIAL_ENGINEERING':
+				case 'UNWANTED_SOFTWARE':
+				case 'POTENTIALLY_HARMFUL_APPLICATION':
+					return 'we can not process this url.';
+					break;
+				
+			}
+			if(is_prcessable){
+				$builder = new \AshAllenDesign\ShortURL\Classes\Builder();
+				$shortURLObject = $builder->destinationUrl('https://destination.com')->make();
+				$shortURL = $shortURLObject->default_short_url;
+				$url_key=$shortURLObject->url_key;
+				dd($shortURLObject);
+				return $shortURL;
+			}
+			
 		}catch(Exception $e){
 			throw new Exception($e->getMessage());
 		}
@@ -71,12 +94,12 @@ class UrlController extends Controller
     }
 
 
-    private function transform(string $url, int $lenght = 3)
+    private function transform(string $url, int $length = 3)
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $shortURL = '';
 
-        for ($i = 0; $i < $lenght; $i++) {
+        for ($i = 0; $i < $length; $i++) {
 
             $index = rand(0, strlen($characters) - 1);
             $shortURL .= $characters[$index];
@@ -84,8 +107,8 @@ class UrlController extends Controller
 
         if ($this->checkURL($shortURL) != 0) {
 
-            $lenght += 1;
-            $this->transform($url, $lenght);
+            $length += 1;
+            $this->transform($url, $length);
         }
 
         if (!$this->storeURL($url, $shortURL)) {
