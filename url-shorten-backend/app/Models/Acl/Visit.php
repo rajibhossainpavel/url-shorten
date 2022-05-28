@@ -12,7 +12,7 @@ class Visit extends Model
     protected $table = 'short_url_visits';
 	 
     protected $fillable = [
-       //
+       'url_key'
     ];
 	
     protected $hidden = [];

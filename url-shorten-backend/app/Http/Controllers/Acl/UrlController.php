@@ -39,6 +39,8 @@ class UrlController extends Controller
 		try {
 			$payload=array();
 			$payload['short_url']=isset($request->short_url) && !empty($request->short_url)? trim($request->short_url): '';
+			$exploded=explode('/', $payload['short_url']);
+			$payload['url_key']=$exploded[sizeof($exploded)-1];
 			$Result['data'] = $this->UrlService->ShowUrl($payload);
 		} catch (Exception $Exception) {
 			$Result = [
