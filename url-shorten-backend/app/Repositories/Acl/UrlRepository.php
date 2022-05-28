@@ -4,6 +4,7 @@ namespace App\Repositories\Acl;
 
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Ariaieboy\LaravelSafeBrowsing\Facades\LaravelSafeBrowsing;
 use App\Models\Acl\Url;
 use App\Models\Acl\Visit;
@@ -68,7 +69,30 @@ class UrlRepository{
 				}
 				if($is_prcessable){
 					$builder = new \AshAllenDesign\ShortURL\Classes\Builder();
-					$shortURLObject = $builder->destinationUrl($payload['url'])->make();
+					if(isset($payload['single_use']) && !empty($payload['single_use']) && $payload['single_use']==1){
+						if(isset($payload['valid_for_days']) && !empty($payload['valid_for_days']) && $payload['valid_for_days']!=0){
+							$shortURLObject = $builder->destinationUrl($payload['url'])
+											->singleUse()
+											->activateAt(\Carbon\Carbon::now()->addDay())
+											->deactivateAt(\Carbon\Carbon::now()->addDays($payload['valid_for_days']))
+											->make();
+						}else{
+							$shortURLObject = $builder->destinationUrl($payload['url'])
+											->singleUse()
+											->make();
+						}
+						
+					}else{
+						if(isset($payload['valid_for_days']) && !empty($payload['valid_for_days']) && $payload['valid_for_days']!=0){
+							$shortURLObject = $builder->destinationUrl($payload['url'])
+											->activateAt(\Carbon\Carbon::now()->addDay())
+											->deactivateAt(\Carbon\Carbon::now()->addDays($payload['valid_for_days']))
+											->make();
+						}else{
+							$shortURLObject = $builder->destinationUrl($payload['url'])
+											->make();
+						}
+					}
 					$result['short_url']=$shortURLObject['default_short_url'];
 					$result['url_key']=$shortURLObject['url_key'];
 				}

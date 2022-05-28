@@ -24,6 +24,8 @@ class UrlController extends Controller
 		try {
 			$payload=array();
 			$payload['url']=isset($request->url) && !empty($request->url)? trim($request->url): '';
+			$payload['single_use']=isset($request->single_use) && !empty($request->single_use)? trim($request->single_use): 0;
+			$payload['valid_for_days']=isset($request->valid_for_days) && !empty($request->valid_for_days)? trim($request->valid_for_days): 0;
 			$Result['data'] = $this->UrlService->StoreUrl($payload);
 		} catch (Exception $Exception) {
 			$Result = [
