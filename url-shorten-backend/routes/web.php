@@ -18,6 +18,6 @@ Route::get('/', function () {
 });
 
 
-	Route::group(['namespace' => 'App\Http\Controllers'], function() {
-		Route::post('check-url', 'UrlController@checkURL');
+	Route::group(['namespace' => 'App\Http\Controllers\Acl'], function() {
+		Route::post('check-url', 'UrlController@storeUrl');
 	});
