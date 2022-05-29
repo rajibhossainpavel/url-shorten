@@ -20,7 +20,6 @@ class UrlController extends Controller
 	}
 	
 	public function storeUrl(Request $request){
-		file_put_contents('request.txt', $request);
 		$Result = ['status' => 200];
 		try {
 			$payload=array();
