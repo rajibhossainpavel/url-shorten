@@ -31,7 +31,6 @@ export default defineComponent({
 						return res.data.short_url;
 					}
 				});
-				//console.log('short_url: ', short_url);
 				return short_url;
 			};
 			
@@ -40,9 +39,7 @@ export default defineComponent({
 			const returned_short_url=runAction(payload);
 			
 			returned_short_url.then(res=>{
-			console.log('returned_short_url: ', res);
 				short_url.value=res;
-				console.log('short_url:', short_url);
 			});
 		}
 		return {
