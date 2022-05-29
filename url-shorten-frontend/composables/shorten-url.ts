@@ -1,6 +1,7 @@
-export function useHelloWorld() {
+export function useShortenUrl() {
 	async function storeUrl(payload){
 		const requestOptions = {
+			//mode: 'no-cors',
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(payload)
@@ -15,13 +16,12 @@ export function useHelloWorld() {
 					return result;
 				}
 			});
-		}
-		catch(e){
+		}catch(e){
 			return {'status': 400, 'data': result};
 		}
 		return {'status': 200, 'data': result};
 	};
 	return {
-		getIP
+		storeUrl
 	};
 }	
